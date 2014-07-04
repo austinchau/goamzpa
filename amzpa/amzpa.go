@@ -37,11 +37,12 @@ type AmazonRequest struct {
 	accessKeySecret string;
 	associateTag string
 	region string;
+  Client *http.Client
 }
 
 // Create a new AmazonRequest initialized with the given parameters
 func NewRequest(accessKeyID string, accessKeySecret string, associateTag string, region string) *AmazonRequest {
-	return &AmazonRequest{accessKeyID, accessKeySecret, associateTag, region}
+	return &AmazonRequest{accessKeyID, accessKeySecret, associateTag, region, &http.Client{}}
 }
 
 // Perform an ItemLookup request.
@@ -49,7 +50,7 @@ func NewRequest(accessKeyID string, accessKeySecret string, associateTag string,
 // Usage:
 // ids := []string{"01289328","2837423"}
 // response,err := request.ItemLookup(ids, "Medium,Accessories", "ASIN")
-func (self AmazonRequest) ItemLookup(client *http.Client, itemIds []string, responseGroups string, idType string) (ItemLookupResponse, error) {
+func (self AmazonRequest) ItemLookup(itemIds []string, responseGroups string, idType string) (ItemLookupResponse, error) {
 	now := time.Now()
 	arguments := make(map[string]string)
 	arguments["AWSAccessKeyId"] = self.accessKeyID
@@ -94,7 +95,7 @@ func (self AmazonRequest) ItemLookup(client *http.Client, itemIds []string, resp
 
 	// Do request
 	requestURL := fmt.Sprintf("http://%s/onca/xml?%s", domain, queryString)
-	content, err := doRequest(client, requestURL)
+	content, err := doRequest(self.Client, requestURL)
 
 	if err != nil {
 		return ItemLookupResponse{}, err
