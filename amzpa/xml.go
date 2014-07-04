@@ -12,7 +12,7 @@ import (
 )
 
 type Image struct {
-	XMLName xml.Name `xml:"MediumImage"`
+	XMLName xml.Name `xml:"LargeImage"`
 	URL 	string
 	Height 	uint16
 	Width 	uint16
@@ -26,7 +26,7 @@ type Item struct {
 	Author 		string `xml:"ItemAttributes>Author"`
 	Price 		string `xml:"ItemAttributes>ListPrice>FormattedPrice"`
 	PriceRaw 	string `xml:"ItemAttributes>ListPrice>Amount"`
-	MediumImage Image
+	LargeImage Image
 }
 
 type Request struct {

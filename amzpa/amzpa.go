@@ -49,7 +49,7 @@ func NewRequest(accessKeyID string, accessKeySecret string, associateTag string,
 // Usage:
 // ids := []string{"01289328","2837423"}
 // response,err := request.ItemLookup(ids, "Medium,Accessories", "ASIN")
-func (self AmazonRequest) ItemLookup(itemIds []string, responseGroups string, idType string) (ItemLookupResponse, error) {
+func (self AmazonRequest) ItemLookup(client *http.Client, itemIds []string, responseGroups string, idType string) (ItemLookupResponse, error) {
 	now := time.Now()
 	arguments := make(map[string]string)
 	arguments["AWSAccessKeyId"] = self.accessKeyID
@@ -94,7 +94,7 @@ func (self AmazonRequest) ItemLookup(itemIds []string, responseGroups string, id
 
 	// Do request
 	requestURL := fmt.Sprintf("http://%s/onca/xml?%s", domain, queryString)
-	content, err := doRequest(requestURL)
+	content, err := doRequest(client, requestURL)
 
 	if err != nil {
 		return ItemLookupResponse{}, err
@@ -105,12 +105,12 @@ func (self AmazonRequest) ItemLookup(itemIds []string, responseGroups string, id
 
 // TODO add "Accept-Encoding": "gzip" and override UserAgent
 // which is set to Go http package.
-func doRequest(requestURL string) ([]byte, error) {
+func doRequest(client *http.Client, requestURL string) ([]byte, error) {
 	var httpResponse *http.Response
 	var err error
 	var contents []byte
-
-	httpResponse, err = http.Get(requestURL)
+  
+	httpResponse, err = client.Get(requestURL)
 
 	if err != nil {
 		return []byte(""), err
@@ -121,4 +121,3 @@ func doRequest(requestURL string) ([]byte, error) {
 
 	return contents, err
 }
-
